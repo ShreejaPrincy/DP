@@ -96,3 +96,49 @@ class Solution {
         return dp[0][3];
     }
 };
+
+
+
+// Space Optimization
+// Time Complexity: O(n)
+// Space Complexity: O(1)
+
+class Solution {
+public:
+    int maximumPoints(vector<vector<int>>& mat) {
+
+        int n = mat.size();
+        int lastDay = n - 1;
+
+        vector<int> front(4);
+        vector<int> curr(4);
+
+        // Base Case (Last Day)
+        front[0] = max(mat[lastDay][1], mat[lastDay][2]);
+        front[1] = max(mat[lastDay][0], mat[lastDay][2]);
+        front[2] = max(mat[lastDay][0], mat[lastDay][1]);
+        front[3] = max({mat[lastDay][0], mat[lastDay][1], mat[lastDay][2]});
+
+        // Fill DP from second last day to first day
+        for (int day = lastDay - 1; day >= 0; day--) {
+
+            for (int last = 0; last < 4; last++) {
+
+                curr[last] = 0;
+
+                for (int task = 0; task < 3; task++) {
+
+                    if (task != last) {
+
+                        curr[last] = max(curr[last],
+                                         mat[day][task] + front[task]);
+                    }
+                }
+            }
+
+            front = curr;
+        }
+
+        return front[3];
+    }
+};

@@ -138,3 +138,48 @@ public:
 
 
 
+// Space Optimization
+// Time Complexity: O(n^2)
+// Space Complexity: O(n)
+
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+
+        int n = matrix.size();
+
+        vector<int> curr(n, 0), prev(n, 0);
+
+        // Base Case
+        prev = matrix[0];
+
+        for(int i = 1; i < n; i++) {
+
+            for(int j = 0; j < n; j++) {
+
+                int left = (j - 1 >= 0)
+                         ? matrix[i][j] + prev[j - 1]
+                         : 1e9;
+
+                int middle = matrix[i][j] + prev[j];
+
+                int right = (j + 1 < n)
+                          ? matrix[i][j] + prev[j + 1]
+                          : 1e9;
+
+                curr[j] = min({left, middle, right});
+            }
+
+            prev = curr;
+        }
+
+        int ans = INT_MAX;
+
+        // Answer can be in any column of last row
+        for(int j = 0; j < n; j++) {
+            ans = min(ans, prev[j]);
+        }
+
+        return ans;
+    }
+};

@@ -89,3 +89,52 @@ public:
 
 
 
+// Tabulation
+// Time Complexity: O(n^2)
+// Space Complexity: O(n^2)
+
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+
+        int n = matrix.size();
+
+        vector<vector<int>> dp(n, vector<int>(n, INT_MAX));
+
+        // Base case: first row
+        dp[0] = matrix[0];
+
+        // Fill from top to bottom
+        for(int i = 1; i < n; i++) {
+
+            for(int j = 0; j < n; j++) {
+
+                int left = 1e9;
+                int middle = 1e9;
+                int right = 1e9;
+
+                if(j - 1 >= 0)
+                    left = matrix[i][j] + dp[i - 1][j - 1];
+
+                middle = matrix[i][j] + dp[i - 1][j];
+
+                if(j + 1 < n)
+                    right = matrix[i][j] + dp[i - 1][j + 1];
+
+                dp[i][j] = min({left, middle, right});
+            }
+        }
+
+        // Path can end at any column
+        int ans = INT_MAX;
+
+        for(int j = 0; j < n; j++) {
+            ans = min(ans, dp[n - 1][j]);
+        }
+
+        return ans;
+    }
+};
+
+
+

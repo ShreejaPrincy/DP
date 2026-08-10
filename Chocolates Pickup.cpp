@@ -240,3 +240,105 @@ public:
 
 
 
+// Space Optimization
+// Time Complexity: O(n * m^2 * 9)
+//                 = O(n * m^2)
+//
+// Space Complexity: O(m^2)
+
+class Solution {
+public:
+    int n, m;
+
+    int maxChocolate(vector<vector<int>>& grid) {
+
+        n = grid.size();
+        m = grid[0].size();
+
+        // front = next row
+        // curr  = current row
+
+        vector<vector<int>> front(
+            m, vector<int>(m, -1)
+        );
+
+        vector<vector<int>> curr(
+            m, vector<int>(m, -1)
+        );
+
+        // Base Case: Last row
+        for(int j1 = 0; j1 < m; j1++) {
+
+            for(int j2 = 0; j2 < m; j2++) {
+
+                if(j1 == j2)
+                    front[j1][j2] = grid[n-1][j1];
+
+                else
+                    front[j1][j2] =
+                        grid[n-1][j1] +
+                        grid[n-1][j2];
+            }
+        }
+
+        // Move from bottom to top
+        for(int i = n-2; i >= 0; i--) {
+
+            for(int j1 = 0; j1 < m; j1++) {
+
+                for(int j2 = 0; j2 < m; j2++) {
+
+                    int best_val = -1e9;
+
+                    // 3 choices for Robot 1
+                    // 3 choices for Robot 2
+                    // Total = 9 combinations
+
+                    for(int k = -1; k <= 1; k++) {
+
+                        for(int l = -1; l <= 1; l++) {
+
+                            int nj1 = j1 + k;
+                            int nj2 = j2 + l;
+
+                            // Invalid next positions
+                            if(nj1 < 0 || nj1 >= m ||
+                               nj2 < 0 || nj2 >= m)
+                                continue;
+
+                            int chocolate;
+
+                            // Current row chocolates
+                            if(j1 == j2)
+                                chocolate = grid[i][j1];
+
+                            else
+                                chocolate =
+                                    grid[i][j1] +
+                                    grid[i][j2];
+
+                            // Current chocolates
+                            // + best answer from next row
+                            best_val = max(
+                                best_val,
+                                chocolate +
+                                front[nj1][nj2]
+                            );
+                        }
+                    }
+
+                    curr[j1][j2] = best_val;
+                }
+            }
+
+            // Current row becomes next row
+            front = curr;
+        }
+
+        // Robot 1 starts at column 0
+        // Robot 2 starts at column m-1
+        return front[0][m-1];
+    }
+};
+
+

@@ -156,3 +156,54 @@ public:
 
 
 
+// Space Optimization
+// Time Complexity: O(n * target)
+// Space Complexity: O(target)
+
+class Solution {
+public:
+
+    bool checkSubsequenceSum(vector<int>& arr, int target) {
+
+        int n = arr.size();
+
+        if(n == 0)
+            return target == 0;
+
+        vector<int> prev(target + 1, 0);
+        vector<int> curr(target + 1, 0);
+
+        // Sum 0 is always possible
+        prev[0] = 1;
+
+        // Using only arr[0]
+        if(arr[0] <= target)
+            prev[arr[0]] = 1;
+
+        for(int i = 1; i < n; i++) {
+
+            curr[0] = 1;
+
+            for(int tar = 1; tar <= target; tar++) {
+
+                // Skip
+                bool skip = prev[tar];
+
+                // Take
+                bool take = false;
+
+                if(tar >= arr[i]) {
+                    take = prev[tar - arr[i]];
+                }
+
+                curr[tar] = take || skip;
+            }
+
+            prev = curr;
+        }
+
+        return prev[target];
+    }
+};
+
+

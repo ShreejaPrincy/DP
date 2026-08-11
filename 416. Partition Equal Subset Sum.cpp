@@ -113,3 +113,65 @@ public:
 
 
 
+// Tabulation
+// Time Complexity: O(n * target)
+// Space Complexity: O(n * target)
+
+class Solution {
+public:
+
+    bool canPartition(vector<int>& arr) {
+
+        int sum = 0;
+
+        for(int x : arr) {
+            sum += x;
+        }
+
+        // Odd sum cannot be divided equally
+        if(sum % 2 != 0)
+            return false;
+
+        int target = sum / 2;
+        int n = arr.size();
+
+        vector<vector<bool>> dp(
+            n,
+            vector<bool>(target + 1, false)
+        );
+
+        // Sum 0 is always possible
+        for(int i = 0; i < n; i++) {
+            dp[i][0] = true;
+        }
+
+        // Using only arr[0]
+        if(arr[0] <= target) {
+            dp[0][arr[0]] = true;
+        }
+
+        // Fill DP table
+        for(int i = 1; i < n; i++) {
+
+            for(int tar = 1; tar <= target; tar++) {
+
+                // Take
+                bool take = false;
+
+                if(arr[i] <= tar) {
+                    take = dp[i-1][tar-arr[i]];
+                }
+
+                // Skip
+                bool skip = dp[i-1][tar];
+
+                dp[i][tar] = take || skip;
+            }
+        }
+
+        return dp[n-1][target];
+    }
+};
+
+
+

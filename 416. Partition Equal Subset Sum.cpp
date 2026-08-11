@@ -175,3 +175,57 @@ public:
 
 
 
+// Space Optimization
+// Time Complexity: O(n * target)
+// Space Complexity: O(target)
+
+class Solution {
+public:
+    bool canPartition(vector<int>& arr) {
+
+        int sum = 0;
+
+        for(int x : arr) {
+            sum += x;
+        }
+
+        // If total sum is odd, equal partition is impossible
+        if(sum % 2 != 0)
+            return false;
+
+        int target = sum / 2;
+        int n = arr.size();
+
+        vector<bool> prev(target + 1, false);
+        vector<bool> curr(target + 1, false);
+
+        // Sum 0 is always possible
+        prev[0] = true;
+        curr[0] = true;
+
+        // Using only arr[0]
+        if(arr[0] <= target)
+            prev[arr[0]] = true;
+
+        for(int i = 1; i < n; i++) {
+
+            for(int tar = 1; tar <= target; tar++) {
+
+                // Take
+                bool take = false;
+
+                if(arr[i] <= tar)
+                    take = prev[tar - arr[i]];
+
+                // Skip
+                bool skip = prev[tar];
+
+                curr[tar] = take || skip;
+            }
+
+            prev = curr;
+        }
+
+        return prev[target];
+    }
+};

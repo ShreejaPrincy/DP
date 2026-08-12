@@ -1,3 +1,4 @@
+// Recursion
 // Time Complexity: O(2^N)
 // Space Complexity: O(N)  -> Recursion Stack
 
@@ -36,6 +37,7 @@ public:
 
 
 
+// Memoisation
 // Time Complexity: O(N * W)
 // Space Complexity: O(N * W) -> DP Array
 //                    O(N)     -> Recursion Stack
@@ -82,3 +84,117 @@ public:
         return solve(n - 1, W, wt, val, dp);
     }
 };
+
+
+
+// Tabulation
+// Time Complexity: O(N * W)
+// Space Complexity: O(N * W)
+class Solution {
+  public:
+    int knapsack(int W, vector<int> &val, vector<int> &wt) {
+        int n=val.size();
+        
+        vector<vector<int>>dp(n,vector<int>(W+1,0));
+        
+        for(int i=0;i<n;i++){
+            dp[i][0]=0;
+        }
+        for(int i=0;i<=W;i++){
+            if(wt[0]<=i)    dp[0][i]=val[0];
+        }
+        
+        for(int i=1;i<n;i++){
+            for(int w=0;w<=W;w++){
+                
+                int skip=dp[i-1][w];
+                int take=-1e9;
+                if(wt[i]<=w)  take=val[i]+dp[i-1][w-wt[i]];
+                 
+                dp[i][w]=max(skip,take);
+            }
+        }
+        
+        return dp[n-1][W];
+    }
+};
+
+
+
+// Space-optimization -(2D)
+// Time Complexity: O(N * W)
+// Space Complexity: O(W)
+class Solution {
+  public:
+    int knapsack(int W, vector<int> &val, vector<int> &wt) {
+        int n=val.size();
+        
+        vector<int>prev(W+1,0);
+        vector<int>curr(W+1,0);
+        
+        prev[0]=0;
+        curr[0]=0;
+        
+        for(int i=0;i<=W;i++){
+            if(wt[0]<=i)    prev[i]=val[0];
+        }
+        
+        for(int i=1;i<n;i++){
+            for(int w=0;w<=W;w++){
+                
+                int skip=prev[w];
+                int take=-1e9;
+                if(wt[i]<=w)  take=val[i]+prev[w-wt[i]];
+                 
+                curr[w]=max(skip,take);
+            }
+            prev=curr;
+        }
+        
+        return prev[W];
+    }
+};
+
+
+// Space-optimization -(1D)
+// Time Complexity: O(N * W)
+// Space Complexity: O(W)
+
+class Solution {
+public:
+    int knapsack(int W, vector<int> &val, vector<int> &wt) {
+
+        int n = val.size();
+
+        vector<int> prev(W + 1, 0);
+
+        // Base Case
+        for(int w = 0; w <= W; w++) {
+            if(wt[0] <= w)
+                prev[w] = val[0];
+        }
+
+        // Fill DP
+        for(int i = 1; i < n; i++) {
+
+            // Traverse backwards
+            for(int w = W; w >= 0; w--) {
+
+                // Not Take
+                int skip = prev[w];
+
+                // Take
+                int take = -1e9;
+
+                if(wt[i] <= w)
+                    take = val[i] + prev[w - wt[i]];
+
+                prev[w] = max(skip, take);
+            }
+        }
+
+        return prev[W];
+    }
+};
+
+

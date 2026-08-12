@@ -160,6 +160,30 @@ class Solution {
 // Time Complexity: O(N * W)
 // Space Complexity: O(W)
 
+// 🔥 KEY 1D DP POINT:
+//
+// prev[w] = max(
+//     prev[w],                      // Don't take current item
+//     val[i] + prev[w - wt[i]]      // Take current item
+// );
+//
+// IMPORTANT:
+// We iterate w from RIGHT → LEFT:
+//
+// for(int w = W; w >= 0; w--)
+//
+// Why?
+// Because prev[w - wt[i]] must be the OLD value
+// (before using the current item).
+//
+// Going backwards ensures the smaller index
+// w - wt[i] has NOT been updated yet.
+//
+// Hence, the same item cannot be taken twice.
+//
+// 0/1 Knapsack → RIGHT to LEFT
+
+
 class Solution {
 public:
     int knapsack(int W, vector<int> &val, vector<int> &wt) {

@@ -1,43 +1,40 @@
 //Recursion
-// Time Complexity: O(2^(N + Amount)) approximately
-// Space Complexity: O(N + Amount) -> Recursion Stack
+// Time Complexity: Exponential
+// Space Complexity: O(N) -> Recursion Stack
 
 class Solution {
 public:
-    int n;
 
-    int solve(int i, vector<int>& coins, int amount) {
+    int solve(int ind, int T, vector<int>& nums) {
 
         // Base Case
-        if(i < 0) {
-            if(amount != 0)
-                return 1e9;
+        if(ind == 0) {
 
-            return 0;
+            if(T % nums[0] == 0)
+                return T / nums[0];
+
+            return 1e9;
         }
 
-        if(amount == 0)
-            return 0;
+        // Not Take
+        int notTake = solve(ind - 1, T, nums);
 
         // Take
         int take = 1e9;
 
-        if(coins[i] <= amount)
-            take = 1 + solve(i, coins, amount - coins[i]);
+        if(nums[ind] <= T)
+            take = 1 + solve(ind, T - nums[ind], nums);
 
-        // Skip
-        int skip = solve(i - 1, coins, amount);
-
-        return min(take, skip);
+        return min(take, notTake);
     }
 
-    int coinChange(vector<int>& coins, int amount) {
+    int minimumElements(vector<int>& nums, int target) {
 
-        n = coins.size();
+        int n = nums.size();
 
-        int ans = solve(n - 1, coins, amount);
+        int ans = solve(n - 1, target, nums);
 
-        if(ans == 1e9)
+        if(ans >= 1e9)
             return -1;
 
         return ans;
@@ -46,107 +43,51 @@ public:
 
 
 // Memoisation
-// Time Complexity: O(N * Amount)
-// Space Complexity: O(N * Amount) -> DP Array
-//                    O(N)          -> Recursion Stack
-// Overall Space: O(N * Amount)
+// Time Complexity: O(N * Target)
+// Space Complexity: O(N * Target) -> DP Array
+//                    O(N)         -> Recursion Stack
+// Overall Space: O(N * Target)
 
 class Solution {
 public:
 
-    int n;
-
-    int solve(vector<vector<int>>& dp, int i,
-              vector<int>& coins, int amount) {
+    int solve(int ind, int T, vector<int>& nums,
+              vector<vector<int>>& dp) {
 
         // Base Case
-        if(amount == 0)
-            return 0;
+        if(ind == 0) {
 
-        if(i < 0)
+            if(T % nums[0] == 0)
+                return T / nums[0];
+
             return 1e9;
+        }
 
         // Already calculated
-        if(dp[i][amount] != -1)
-            return dp[i][amount];
+        if(dp[ind][T] != -1)
+            return dp[ind][T];
+
+        // Not Take
+        int notTake = solve(ind - 1, T, nums, dp);
 
         // Take
         int take = 1e9;
 
-        if(coins[i] <= amount) {
-            take = 1 + solve(dp, i, coins,
-                            amount - coins[i]);
-        }
+        if(nums[ind] <= T)
+            take = 1 + solve(ind, T - nums[ind], nums, dp);
 
-        // Skip
-        int skip = solve(dp, i - 1, coins, amount);
-
-        return dp[i][amount] = min(take, skip);
+        return dp[ind][T] = min(take, notTake);
     }
 
-    int coinChange(vector<int>& coins, int amount) {
+    int minimumElements(vector<int>& nums, int target) {
 
-        n = coins.size();
+        int n = nums.size();
 
-        vector<vector<int>> dp(n, vector<int>(amount + 1, -1));
+        vector<vector<int>> dp(
+            n, vector<int>(target + 1, -1)
+        );
 
-        int ans = solve(dp, n - 1, coins, amount);
-
-        if(ans == 1e9)
-            return -1;
-
-        return ans;
-    }
-};
-
-
-// Tabulation
-// Time Complexity: O(N * Amount)
-// Space Complexity: O(N * Amount)
-
-class Solution {
-public:
-    int n;
-
-    int coinChange(vector<int>& coins, int amount) {
-
-        n = coins.size();
-
-        vector<vector<int>> dp(n, vector<int>(amount + 1, 1e9));
-
-        // Base Case: amount = 0
-        for(int i = 0; i < n; i++) {
-            dp[i][0] = 0;
-        }
-
-        // Base Case: only coin[0]
-        for(int amt = 1; amt <= amount; amt++) {
-
-            if(coins[0] > amt)
-                dp[0][amt] = 1e9;
-            else
-                dp[0][amt] = 1 + dp[0][amt - coins[0]];
-        }
-
-        // DP
-        for(int i = 1; i < n; i++) {
-
-            for(int amt = 1; amt <= amount; amt++) {
-
-                // Take
-                int take = 1e9;
-
-                if(coins[i] <= amt)
-                    take = 1 + dp[i][amt - coins[i]];
-
-                // Skip
-                int skip = dp[i - 1][amt];
-
-                dp[i][amt] = min(take, skip);
-            }
-        }
-
-        int ans = dp[n - 1][amount];
+        int ans = solve(n - 1, target, nums, dp);
 
         if(ans >= 1e9)
             return -1;
@@ -154,6 +95,110 @@ public:
         return ans;
     }
 };
+
+// Tabulation
+// Time Complexity: O(N * Target)
+// Space Complexity: O(N * Target)
+
+class Solution {
+public:
+
+    int minimumElements(vector<int>& nums, int target) {
+
+        int n = nums.size();
+
+        vector<vector<int>> dp(
+            n, vector<int>(target + 1, 1e9)
+        );
+
+        // Base Case: ind == 0
+        for(int T = 0; T <= target; T++) {
+
+            if(T % nums[0] == 0)
+                dp[0][T] = T / nums[0];
+        }
+
+        // Fill DP table
+        for(int ind = 1; ind < n; ind++) {
+
+            for(int T = 0; T <= target; T++) {
+
+                // Not Take
+                int notTake = dp[ind - 1][T];
+
+                // Take
+                int take = 1e9;
+
+                if(nums[ind] <= T)
+                    take = 1 + dp[ind][T - nums[ind]];
+
+                dp[ind][T] = min(take, notTake);
+            }
+        }
+
+        int ans = dp[n - 1][target];
+
+        if(ans >= 1e9)
+            return -1;
+
+        return ans;
+    }
+};
+
+
+
+
+//Space Optimisation - 2D
+// Time Complexity: O(N * Target)
+// Space Complexity: O(Target)
+
+class Solution {
+public:
+
+    int minimumElements(vector<int>& nums, int target) {
+
+        int n = nums.size();
+
+        vector<int> prev(target + 1, 1e9);
+        vector<int> curr(target + 1, 1e9);
+
+        // Base Case: ind == 0
+        for(int T = 0; T <= target; T++) {
+
+            if(T % nums[0] == 0)
+                prev[T] = T / nums[0];
+        }
+
+        // Fill DP
+        for(int ind = 1; ind < n; ind++) {
+
+            for(int T = 0; T <= target; T++) {
+
+                // Not Take
+                int notTake = prev[T];
+
+                // Take
+                int take = 1e9;
+
+                if(nums[ind] <= T)
+                    take = 1 + curr[T - nums[ind]];
+
+                curr[T] = min(take, notTake);
+            }
+
+            prev = curr;
+        }
+
+        int ans = prev[target];
+
+        if(ans >= 1e9)
+            return -1;
+
+        return ans;
+    }
+};
+
+
 
 
 
@@ -167,46 +212,41 @@ public:
 // Coin Change / Unbounded Knapsack:
 // LEFT → RIGHT because current coin CAN be reused.
 
+// Time Complexity: O(N * Target)
+// Space Complexity: O(Target)
+
 class Solution {
 public:
-    int n;
+    int minimumElements(vector<int>& nums, int target) {
 
-    int coinChange(vector<int>& coins, int amount) {
+        int n = nums.size();
 
-        n = coins.size();
+        vector<int> prev(target + 1, 1e9);
 
-        vector<int> prev(amount + 1, 1e9);
-
-        // Base Case
-        prev[0] = 0;
-
-        // Only coin[0]
-        for(int amt = 1; amt <= amount; amt++) {
-
-            if(coins[0] <= amt)
-                prev[amt] = 1 + prev[amt - coins[0]];
+        // Base Case: ind == 0
+        for(int T = 0; T <= target; T++) {
+            if(T % nums[0] == 0)
+                prev[T] = T / nums[0];
         }
 
-        // DP
-        for(int i = 1; i < n; i++) {
+        for(int ind = 1; ind < n; ind++) {
 
-            // *** IMPORTANT: LEFT → RIGHT
-            for(int amt = 0; amt <= amount; amt++) {
+            for(int T = 0; T <= target; T++) {
+
+                // Not Take
+                int notTake = prev[T];
 
                 // Take
                 int take = 1e9;
 
-                if(coins[i] <= amt)
-                    take = 1 + prev[amt - coins[i]];
+                if(nums[ind] <= T)
+                    take = 1 + prev[T - nums[ind]];
 
-                // Skip
-                int skip = prev[amt];
-
-                prev[amt] = min(take, skip);
+                prev[T] = min(take, notTake);
             }
         }
 
-        int ans = prev[amount];
+        int ans = prev[target];
 
         if(ans >= 1e9)
             return -1;

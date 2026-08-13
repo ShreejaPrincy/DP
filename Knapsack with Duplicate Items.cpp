@@ -173,6 +173,20 @@ class Solution {
 
 
 // Space-optimization -(1D)
+
+
+/*
+LEFT → RIGHT
+
+Let the current item update smaller capacities first.
+
+Then those updated values can be used
+to build larger capacities.
+
+Therefore → item used MULTIPLE TIMES.
+*/
+
+
 // Time Complexity: O(N * W)
 // Space Complexity: O(W)
 class Solution {

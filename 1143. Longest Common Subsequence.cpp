@@ -69,6 +69,7 @@ public:
 // we need a base case for the negative index.
 // In tabulation, to avoid negative indices, we shift indices by +1.
 // Therefore: s1[i-1], s2[j-1] and dp[n+1][m+1].
+// first do index shifting in recursion code only , it will be easier to code for the tabulation, space optimisation
 
 
 //Tabulation

@@ -158,3 +158,68 @@ public:
         return dp[n][m];
     }
 };
+
+
+
+
+// Space Optimized Tabulation
+// TC: O(n * m)
+// SC: O(m)
+
+class Solution {
+public:
+    bool isMatch(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+
+        // vector<vector<bool>> dp(n+1, vector<bool>(m+1, 0));
+        vector<bool> prev(m + 1, 0);
+        vector<bool> curr(m + 1, 0);
+
+        prev[0] = true;
+        curr[0] = false;
+
+        // Initialize first row:
+        // Empty string matches only a pattern
+        // consisting entirely of '*'
+        for (int j = 1; j <= m; j++) {
+            bool flag = true;
+
+            for (int jj = 1; jj <= j; jj++) {
+                if (t[jj - 1] != '*') {
+                    flag = false;
+                }
+            }
+
+            prev[j] = flag;
+        }
+
+        for (int i = 1; i <= n; i++) {
+            curr[0] = false;
+
+            for (int j = 1; j <= m; j++) {
+
+                if (s[i - 1] == t[j - 1] || t[j - 1] == '?') {
+                    curr[j] = prev[j - 1];
+                }
+
+                else if (t[j - 1] == '*') {
+                    // '*' matches:
+                    // 1. ZERO characters -> curr[j-1]
+                    // 2. ONE or MORE characters -> prev[j]
+                    curr[j] = curr[j - 1] || prev[j];
+                }
+
+                else {
+                    curr[j] = false;
+                }
+            }
+
+            prev = curr;
+        }
+
+        return prev[m];
+    }
+};
+
+

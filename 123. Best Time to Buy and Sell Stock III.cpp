@@ -1,4 +1,6 @@
 //Recursion
+// TC: O(2^n)
+// SC: O(n)
 class Solution {
 public:
     int n;
@@ -26,6 +28,8 @@ public:
 
 
 //Memoisation
+// TC: O(n)
+// SC: O(n)
 class Solution {
 public:
     int n;
@@ -57,6 +61,8 @@ public:
 
 
 //Tabulation
+// TC: O(n)
+// SC: O(n)
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
@@ -102,6 +108,8 @@ public:
 
 
 //Space Optimisation
+// TC: O(n)
+// SC: O(1)
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
